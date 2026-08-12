@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Uang Jalan Port Madiun - Baraka Express</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --sidebar-width: 260px; --primary-red: #d92525; }
+        body { background-color: #f4f6f9; font-family: 'Calibri', Arial, sans-serif; overflow-x: hidden; margin: 0; padding: 0; color: #333; }
+
+        /* Sidebar Styles */
+        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background: #212529; color: #fff; transition: all 0.3s; z-index: 1000; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+        .sidebar .brand { font-size: 1.2rem; font-weight: 700; padding: 20px; background: #1a1e21; border-bottom: 1px solid #373b3e; letter-spacing: 1px; }
+        .sidebar .nav-link { color: #adb5bd; padding: 12px 20px; margin: 4px 10px; border-radius: 6px; font-weight: 700; transition: all 0.2s; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #fff; background: var(--primary-red); transform: translateX(5px); }
+
+        /* Main Content */
+        .main-content { margin-left: var(--sidebar-width); padding: 30px; transition: all 0.3s; min-height: 100vh; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+
+        /* Table Styles */
+        .table-wrapper { max-height: 70vh; overflow-y: auto; }
+        .table-excel { font-size: 0.85rem; white-space: nowrap; font-weight: 700 !important; }
+        .table-excel thead th { position: sticky; top: 0; background-color: #ffc107 !important; color: #000; text-align: center; vertical-align: middle; border: 1px solid #dee2e6; z-index: 10; box-shadow: 0 2px 2px rgba(0,0,0,0.1); font-weight: 700 !important;}
+        .table-excel td { vertical-align: middle; border: 1px solid #dee2e6; font-weight: 700 !important; color: #000 !important; }
+        .paste-area { border: 2px dashed var(--primary-red); background: #fff8f8; border-radius: 8px; padding: 15px; }
+
+        /* Footer Sum Table Style */
+        .table-footer-sum { position: sticky; bottom: 0; background: #fff3cd !important; font-weight: 800; border-top: 2px solid #ffc107 !important; z-index: 5; }
+
+        /* Edit Form Styles */
+        .form-section-title { font-size: 1rem; font-weight: 700; color: var(--primary-red); border-bottom: 2px solid #eee; padding-bottom: 5px; margin-bottom: 15px; margin-top: 15px; }
+        .form-container { background-color: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+
+        /* Receipt Styles & Area Struk Uppercase Integration */
+        .area-struk, .receipt-container { background: #ffffff; border: none; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 25px; max-width: 480px; margin: 0 auto; font-size: 12pt !important; color: #000000; position: relative; overflow: hidden; font-weight: 700 !important; text-transform: uppercase !important; }
+        .receipt-container * { font-size: 12pt !important; font-weight: 700 !important; color: #000000 !important; text-transform: uppercase !important; }
+        .receipt-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--primary-red), #ffc107); }
+        .receipt-header { text-align: center; margin-bottom: 15px; }
+        .brand-title { font-weight: 700 !important; color: var(--primary-red) !important; font-size: 16pt !important; letter-spacing: 1px; text-transform: uppercase; margin: 0; }
+        .badge-type { display: inline-block; padding: 6px 14px; background: #212529 !important; color: #fff !important; font-weight: 700 !important; font-size: 11pt !important; border-radius: 20px; margin-top: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .receipt-section-title { font-size: 12pt !important; text-transform: uppercase !important; letter-spacing: 0.5px; color: #000 !important; font-weight: 700 !important; margin-bottom: 6px; margin-top: 12px; border-bottom: 2px dashed #000; padding-bottom: 2px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12pt !important; font-weight: 700 !important; text-transform: uppercase !important; }
+        .receipt-row .label { color: #000 !important; width: 45%; font-weight: 700 !important; text-transform: uppercase !important; }
+        .receipt-row .value { font-weight: 700 !important; color: #000 !important; text-align: right; width: 55%; text-transform: uppercase !important; }
+        .total-box { background: #f8f9fa !important; border: 2px solid #000 !important; border-radius: 8px; padding: 12px; margin-top: 14px; margin-bottom: 10px; text-align: center; text-transform: uppercase; font-weight: 700 !important; font-size: 13pt !important; }
+        .total-box span { font-size: 15pt !important; font-weight: 700 !important; }
+        .terbilang-box { background: #fff8f8 !important; border-left: 3px solid var(--primary-red); padding: 8px 10px; font-size: 11pt !important; color: #000 !important; border-radius: 0 8px 8px 0; font-style: italic; margin-top: 6px; font-weight: 700 !important; text-transform: uppercase !important; }
+
+        /* Operasional Truck Container Integration */
+        .card-operasional {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 650px;
+            margin: 20px auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .filter-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8f9fa; padding: 12px; border-radius: 8px; }
+        .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .modern-table th { background-color: #f8f9fa; color: #6c757d; font-weight: 600; padding: 12px; border-bottom: 2px solid #dee2e6; }
+        .modern-table td { padding: 12px; border-bottom: 1px solid #f1f3f5; color: #495057; }
+        .row-total { font-weight: bold; background-color: #e9ecef; }
+        .text-right { text-align: right; }
+        .btn-edit, .btn-hapus { margin: 2px; }
+
+        /* Print Media Query */
+        @media print {
+          @page { size: A4; margin: 10mm; background-color: #ffffff; }
+          body { background-color: #fff !important; }
+          .sidebar, .navbar, .no-print { display: none !important; }
+          .main-content { margin-left: 0 !important; padding: 0 !important; width: 100% !important; }
+          .tab-pane { display: none !important; }
+          .tab-pane[style*="display: block"] { display: block !important; }
+          .receipt-container, .area-struk { position: relative; box-shadow: none; padding: 5px; border: none; max-width: 100%; margin: 0; font-size: 12pt !important; font-weight: 700 !important; color: #000 !important; text-transform: uppercase !important; }
+          .receipt-container * { font-size: 12pt !important; font-weight: 700 !important; color: #000 !important; text-transform: uppercase !important; }
+          .receipt-container::before { display: none; }
+        }
+
+        @media (max-width: 768px) {
+          .sidebar { width: 70px; }
+          .sidebar .brand span, .sidebar .nav-link span { display: none; }
+          .main-content { margin-left: 70px; padding: 15px; }
+          .receipt-container, .area-struk { padding: 20px; }
+        }
+    </style>
+</head>
+<body onload="initApp()">
+
+<div class="sidebar d-flex flex-column no-print">
+  <div class="brand text-center text-truncate">
+    <i class="fa-solid fa-truck-fast text-danger"></i> <span class="ms-2">BARAKA MADIUN</span>
+  </div>
+  <ul class="nav nav-pills flex-column mb-auto mt-3">
+    <li class="nav-item"><a href="#" class="nav-link active" onclick="switchTab('dashboard', event)"><i class="fa-solid fa-chart-pie me-2"></i><span>Dashboard</span></a></li>
+    <li class="nav-item"><a href="#" class="nav-link" onclick="switchTab('rekapTable', event)"><i class="fa-solid fa-table me-2"></i><span>Tabel Rekap & Paste</span></a></li>
+    <li class="nav-item"><a href="#" class="nav-link" onclick="switchTab('editFormTab', event)"><i class="fa-solid fa-pen-to-square me-2"></i><span>Input & Edit UJ</span></a></li>
+    <li class="nav-item"><a href="#" class="nav-link" onclick="switchTab('strukKA', event)"><i class="fa-solid fa-file-invoice me-2"></i><span>Struk Kantor</span></a></li>
+    <li class="nav-item"><a href="#" class="nav-link" onclick="switchTab('strukGB', event)"><i class="fa-solid fa-receipt me-2"></i><span>Struk Gabungan</span></a></li>
+    <li class="nav-item"><a href="#" class="nav-link" onclick="switchTab('rekapSeparateTab', event)"><i class="fa-solid fa-file-lines me-2"></i><span>Rekapitulasi Saja</span></a></li>
+    <li class="nav-item"><a href="#" class="nav-link" onclick="switchTab('operationalSummaryTab', event)"><i class="fa-solid fa-file-lines me-2"></i><span>Rincian Operasional</span></a></li>
+    <li class="nav-item"><a href="#" class="nav-link" onclick="switchTab('backupRestoreTab', event)"><i class="fa-solid fa-database me-2"></i><span>Backup & Restore</span></a></li>
+  </ul>
+  <div class="p-3 text-muted small text-center"><span>Server HP v12.9 (Calibri 12pt)</span></div>
+</div>
+
+<div class="main-content">
+  
+  <!-- 1. DASHBOARD -->
+  <div id="tab-dashboard" class="tab-pane">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold text-dark">Dashboard Port Madiun</h2>
+      <span class="badge bg-danger p-2 px-3 rounded-pill"><i class="fa-solid fa-database me-1"></i> Auto-Save Aktif</span>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 p-4 text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #d92525, #e05e5e);">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="text-uppercase mb-1 opacity-75">Total Armada Tercatat</h6>
+              <h2 id="statTotalArmada" class="display-4 fw-bold mb-0">0</h2>
+            </div>
+            <i class="fa-solid fa-truck-moving fa-3x opacity-50"></i>
+          </div>
+          <p class="mb-0 mt-3 small opacity-75">Tersimpan Permanen di Browser</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 p-4 bg-dark text-white border-0 shadow-sm">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="text-uppercase mb-1 opacity-75">Status Sistem</h6>
+              <h2 class="display-5 fw-bold mb-0 text-success">Online</h2>
+            </div>
+            <i class="fa-solid fa-server fa-3x opacity-50"></i>
+          </div>
+          <p class="mb-0 mt-3 small opacity-75">Sistem berjalan normal</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 p-4 border-0 shadow-sm" style="background: linear-gradient(135deg, #ffc107, #ff9800); color: #fff;">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="text-uppercase mb-1 opacity-75">Fungsi Cetak</h6>
+              <h3 class="fw-bold mb-0">Font Calibri 12</h3>
+            </div>
+            <i class="fa-solid fa-print fa-3x opacity-50"></i>
+          </div>
+          <p class="mb-0 mt-3 small opacity-75">Struk Kantor & Gabungan</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. TABEL REKAP & PASTE EXCEL -->
+  <div id="tab-rekapTable" class="tab-pane" style="display:none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="fw-bold">Rekapitulasi Uang Jalan</h2>
+      <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="clearPasteData()">
+        <i class="fa-solid fa-trash me-1"></i> Bersihkan Data
+      </button>
+    </div>
+    
+    <div class="card p-3 mb-3 bg-white border">
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <label class="form-label fw-bold mb-1"><i class="fa-solid fa-filter text-danger me-1"></i> Filter Tipe Struk:</label>
+          <select id="filterTipeStruk" class="form-select form-select-sm fw-bold" onchange="renderTableAndDropdowns()">
+            <option value="SEMUA">-- Tampilkan Semua --</option>
+            <option value="KANTOR">Struk Kantor</option>
+            <option value="GABUNGAN">Struk Gabungan</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 mb-4 paste-area shadow-sm">
+      <label class="form-label fw-bold text-danger mb-1"><i class="fa-solid fa-file-excel me-2"></i> Alat Bantu Paste Data Excel:</label>
+      <p class="text-muted small mb-2">Sentuh dan tahan kotak di bawah ini, lalu pilih <b>Paste (Tempel)</b> sesuai urutan kolom Anda:</p>
+      <textarea id="excelPasteInput" class="form-control fw-bold" rows="4" placeholder="Tempel data di sini..." oninput="handleExcelPaste()"></textarea>
+    </div>
+
+    <div class="card p-0 shadow-sm overflow-hidden">
+      <div class="table-wrapper">
+        <table class="table table-bordered table-hover table-excel mb-0" id="masterRekapTable">
+          <thead>
+            <tr>
+              <th>AKSI</th>
+              <th>TIPE</th>
+              <th>TANGGAL</th>
+              <th>NO. RESI</th>
+              <th>SURAT JALAN</th>
+              <th>NO. POLISI</th>
+              <th>NAMA SOPIR 1</th>
+              <th>NAMA SOPIR 2</th>
+              <th>TIPE MOBIL</th>
+              <th>RUTE</th>
+              <th>TITIKAN</th>
+              <th>KETERANGAN TITIKAN</th>
+              <th>NOMINAL TITIKAN</th>
+              <th>TIPE TUJUAN</th>
+              <th>WILAYAH</th>
+              <th>JARAK</th>
+              <th>WAKTU TEMPUH</th>
+              <th>TOLL</th>
+              <th>OPERASIONAL SOPIR</th>
+              <th>UANG JALAN</th>
+              <th>TOTAL UANG JALAN</th>
+              <th>RITASI</th>
+              <th>KETERANGAN TOL</th>
+              <th>POTONGAN</th>
+              <th>BBM DAN BONUS</th>
+              <th>LAIN-LAIN</th>
+              <th>JML ORANG UANG SAKU</th>
+              <th>NOMINAL UANG SAKU</th>
+              <th>JML ORANG GAJI ASAL</th>
+              <th>NOMINAL GAJI ASAL</th>
+              <th>KET GAJI ASAL</th>
+              <th>KURANGAN TOL</th>
+              <th>KELEBIHAN TOL</th>
+              <th>UANG BONGKAR/MUAT</th>
+              <th>JML ORANG UANG INAP</th>
+              <th>NOMINAL UANG INAP</th>
+              <th>KET UANG INAP (LOKASI)</th>
+              <th>KET UANG INAP (WAKTU)</th>
+              <th>GANTI TOL ASAL</th>
+              <th>PELUNASAN UJ MARUNDA</th>
+            </tr>
+          </thead>
+          <tbody id="rekapTableBody"></tbody>
+          <tfoot class="table-footer-sum" id="tableFooter" style="display:none;"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. TAB FORM EDIT / INPUT -->
+  <div id="tab-editFormTab" class="tab-pane" style="display:none;">
+    <h2 class="fw-bold mb-4">Input & Edit Uang Jalan</h2>
+    
+    <div class="form-container">
+      <div class="row mb-4 align-items-center bg-light p-3 rounded border border-warning">
+        <div class="col-md-8">
+          <label class="fw-bold small mb-1">Cari Data Tersimpan (Berdasarkan Nopol & Rute):</label>
+          <select id="searchNopolSelect" class="form-select fw-bold" onchange="loadDataToEditForm()">
+            <option value="">-- Pilih Data Baru atau Cari Data Lama --</option>
+          </select>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0 d-flex align-items-end">
+          <button class="btn btn-dark w-100 fw-bold" onclick="triggerSearchData()"><i class="fa-solid fa-search me-1"></i> Load Data</button>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12"><div class="form-section-title"><i class="fa-solid fa-file-lines me-2"></i>Informasi Dokumen & Perjalanan</div></div>
+        
+        <div class="col-md-3">
+          <label class="form-label fw-bold small mb-1">Tipe Struk</label>
+          <select id="editTipeStruk" class="form-select form-select-sm bg-light fw-bold">
+            <option value="KANTOR">KANTOR</option>
+            <option value="GABUNGAN">GABUNGAN</option>
+          </select>
+        </div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Tanggal</label><input type="text" id="editTanggal" class="form-control form-control-sm fw-bold" placeholder="DD/MM/YYYY"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">No. Resi</label><input type="text" id="editNoResi" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Surat Jalan</label><input type="text" id="editSuratJalan" class="form-control form-control-sm fw-bold"></div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold small mb-1">No. Polisi</label>
+          <div class="input-group input-group-sm">
+            <input type="text" id="editNopol" class="form-control fw-bold" placeholder="Ketik Nopol">
+            <select id="dropdownNopol" class="form-select fw-bold" style="max-width: 90px;" onchange="document.getElementById('editNopol').value=this.value;">
+              <option value="">Pilih</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-2"><label class="form-label fw-bold small mb-1">Tipe Mobil</label><input type="text" id="editTipeMobil" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small mb-1">Rute</label>
+          <div class="input-group input-group-sm">
+            <input type="text" id="editRute" class="form-control fw-bold" placeholder="Ketik Rute">
+            <select id="dropdownRute" class="form-select fw-bold" style="max-width: 120px;" onchange="document.getElementById('editRute').value=this.value;">
+              <option value="">Pilih</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-6"><label class="form-label fw-bold small mb-1">Nama Sopir 1</label><input type="text" id="editSopir1" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-6"><label class="form-label fw-bold small mb-1">Nama Sopir 2</label><input type="text" id="editSopir2" class="form-control form-control-sm fw-bold"></div>
+
+        <div class="col-12"><div class="form-section-title"><i class="fa-solid fa-map-location-dot me-2"></i>Rincian Lokasi & Titikan</div></div>
+        
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Titikan (Lokasi)</label><input type="text" id="editTitikan" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Keterangan Titikan</label><input type="text" id="editKetTitikan" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1 text-success">Nominal Titikan (Rp)</label><input type="text" id="editNomTitikan" class="form-control form-control-sm border-success fw-bold" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Tipe Tujuan</label><input type="text" id="editTipeTujuan" class="form-control form-control-sm fw-bold"></div>
+        
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Wilayah</label><input type="text" id="editWilayah" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Jarak (Km)</label><input type="text" id="editJarak" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Waktu Tempuh</label><input type="text" id="editWaktuTempuh" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Ritasi</label><input type="text" id="editRitasi" class="form-control form-control-sm fw-bold"></div>
+
+        <div class="col-12"><div class="form-section-title"><i class="fa-solid fa-money-bill-wave me-2"></i>Komponen Biaya & Tol</div></div>
+        
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1">Toll (Rp)</label><input type="text" id="editToll" class="form-control form-control-sm fw-bold" value="545000" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1">Ket. Tol</label><input type="text" id="editKetTol" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1">Operasional Sopir</label><input type="text" id="editOperasionalSopir" class="form-control form-control-sm fw-bold" oninput="calculateTotalUJForm()"></div>
+
+        <!-- INTEGRASI BAGIAN TAMBAH/HAPUS BARIS KATEGORI BIAYA DINAMIS -->
+        <div class="col-12 mt-3">
+            <div class="form-section-title"><i class="fa-solid fa-list-check me-2"></i>Pengelolaan Kategori Pengeluaran Tambahan</div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="tabelPengeluaran">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Kolom Uang Jalan / Kategori</th>
+                            <th>Nominal (Rp)</th>
+                            <th style="width: 140px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="container-baris">
+                        <tr>
+                            <td>
+                                <select name="jenis_pengeluaran" class="form-control form-control-sm fw-bold">
+                                    <option value="">- Pilih -</option>
+                                    <option value="kategori1">Kategori 1</option>
+                                    <option value="kategori2">Kategori 2</option>
+                                    <option value="Truck Kantor">Jenis Dropdown Truck Kantor</option>
+                                    <option value="Rute Asal Kantor">Rute Asal Kantor</option>
+                                    <option value="Jumlah Saku Orang">Jumlah Saku Orang</option>
+                                    <option value="Jumlah Gaji Orang">Jumlah Gaji Orang</option>
+                                    <option value="Nominal Gaji Orang">Nominal Gaji Orang</option>
+                                    <option value="Jumlah Inap Orang">Jumlah Inap Orang</option>
+                                    <option value="Nominal Inap Orang">Nominal Inap Orang</option>
+                                    <option value="Ket Inap (waktu)">Ket Inap (waktu)</option>
+                                    <option value="Kekurangan Toll">Kekurangan Toll</option>
+                                    <option value="Kelebihan Toll">Kelebihan Toll</option>
+                                    <option value="Potongan">Potongan</option>
+                                    <option value="Truck Gabungan">Jenis Dropdown Truck Gabungan</option>
+                                    <option value="Ganti Toll Asal">Ganti Toll Asal</option>
+                                    <option value="Pelunasan Uang Jalan Marunda">Pelunasan Uang Jalan Marunda</option>
+                                    <option value="Uang Jalan Gabungan">Uang Jalan Gabungan</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" name="nominal[]" class="form-control form-control-sm fw-bold" placeholder="Nominal">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm btn-edit">Edit</button>
+                                <button type="button" class="btn btn-danger btn-sm btn-hapus">Hapus</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-success btn-sm fw-bold" id="tambahBaris">+ Tambah Baris Pengeluaran</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12"><div class="form-section-title text-danger"><i class="fa-solid fa-circle-plus me-2"></i>Komponen Khusus Struk Kantor</div></div>
+        
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Jml Org Uang Saku</label><input type="text" id="editJmlOrgUangSaku" class="form-control form-control-sm fw-bold" value="2" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Nominal Uang Saku</label><input type="text" id="editNomUangSaku" class="form-control form-control-sm fw-bold" value="35000" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Jml Org Gaji Asal</label><input type="text" id="editJmlOrgGajiAsal" class="form-control form-control-sm fw-bold" value="2" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1">Nominal Gaji Asal</label><input type="text" id="editNomGajiAsal" class="form-control form-control-sm fw-bold" value="25000" oninput="calculateTotalUJForm()"></div>
+
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1">Keterangan Gaji Asal</label><input type="text" id="editKetGajiAsal" class="form-control form-control-sm fw-bold"></div>
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1 text-success">Kurangan Tol (+)</label><input type="text" id="editKuranganTol" class="form-control form-control-sm border-success fw-bold" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1 text-danger">Kelebihan Tol (-) masukkan minus</label><input type="text" id="editKelebihanTol" class="form-control form-control-sm border-danger fw-bold" oninput="calculateTotalUJForm()"></div>
+
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1 text-primary">Uang Bongkar/Muat (Rp)</label><input type="text" id="editUangBongkarMuat" class="form-control form-control-sm border-primary fw-bold" value="70000" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-3"><label class="form-label fw-bold small mb-1 text-primary">Jml Orang Uang Inap</label><input type="text" id="editJmlOrgUangInap" class="form-control form-control-sm border-primary fw-bold" value="2" oninput="calculateTotalUJForm()"></div>
+        
+        <div class="col-md-3">
+          <label class="form-label fw-bold small mb-1 text-primary">Nominal Uang Inap</label>
+          <select id="editNomUangInap" class="form-select form-select-sm border-primary fw-bold" onchange="calculateTotalUJForm()">
+            <option value="0">Rp 0 (Tidak Menginap)</option>
+            <option value="40000">Rp 40.000</option>
+            <option value="80000">Rp 80.000</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold small mb-1 text-primary">Ket. Inap (Lokasi)</label>
+          <select id="editKetInapLokasi" class="form-select form-select-sm border-primary fw-bold">
+            <option value="">None / Kosong / Blank</option>
+            <option value="Pomdn">Pomdn</option>
+            <option value="Malang">Malang</option>
+            <option value="Pomdn & Malang">Pomdn & Malang</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold small mb-1 text-primary">Ket. Inap (Waktu)</label>
+          <select id="editKetInapWaktu" class="form-select form-select-sm border-primary fw-bold">
+            <option value="1 hari">1 hari</option>
+            <option value="2 hari">2 hari</option>
+            <option value="3 hari">3 hari</option>
+          </select>
+        </div>
+
+        <div class="col-12"><div class="form-section-title text-primary"><i class="fa-solid fa-circle-plus me-2"></i>Komponen Khusus Struk Gabungan</div></div>
+        
+        <div class="col-md-6"><label class="form-label fw-bold small mb-1">Ganti Tol Asal (Rp)</label><input type="text" id="editGantiTolAsal" class="form-control form-control-sm fw-bold" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-6"><label class="form-label fw-bold small mb-1">Pelunasan Uang Jalan Marunda (Rp)</label><input type="text" id="editPelunasanMarunda" class="form-control form-control-sm fw-bold" oninput="calculateTotalUJForm()"></div>
+
+        <div class="col-12"><div class="form-section-title"><i class="fa-solid fa-wallet me-2"></i>Uang Jalan, Potongan & Bonus</div></div>
+        
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1">Uang Jalan (Rp)</label><input type="text" id="editUangJalan" class="form-control form-control-sm fw-bold" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1 text-danger">Potongan (-) Rp</label><input type="text" id="editPotongan" class="form-control form-control-sm border-danger fw-bold" value="30000" oninput="calculateTotalUJForm()"></div>
+        <div class="col-md-4"><label class="form-label fw-bold small mb-1">BBM & Bonus Rp</label><input type="text" id="editBbmBonus" class="form-control form-control-sm fw-bold" value="615000" oninput="calculateTotalUJForm()"></div>
+        
+        <div class="col-md-12 mt-2"><label class="form-label fw-bold small mb-1">Lain-lain Rp</label><input type="text" id="editLainLain" class="form-control form-control-sm fw-bold" oninput="calculateTotalUJForm()"></div>
+
+        <div class="col-12 mt-4">
+          <div class="p-3 bg-dark text-white rounded d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">TOTAL UANG JALAN:</h5>
+            <input type="text" id="editTotalUangJalan" class="form-control w-50 text-end fw-bold fs-5 bg-white text-danger" readonly>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+        <button class="btn btn-outline-secondary px-4 fw-bold" onclick="clearEditForm()"><i class="fa-solid fa-rotate-left me-1"></i> Reset</button>
+        <div>
+          <button class="btn btn-primary px-4 me-2 shadow-sm fw-bold" onclick="saveNewData()"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Baru</button>
+          <button class="btn btn-success px-4 me-2 shadow-sm fw-bold" onclick="updateCurrentData()"><i class="fa-solid fa-check me-1"></i> Update Data</button>
+          <button class="btn btn-danger px-4 shadow-sm fw-bold" onclick="deleteCurrentData()"><i class="fa-solid fa-trash me-1"></i> Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. STRUK ARMADA KANTOR -->
+  <div id="tab-strukKA" class="tab-pane" style="display:none;">
+    <div class="card p-3 mb-4 bg-white border no-print shadow-sm">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-3">
+          <label class="form-label fw-bold small mb-1 text-danger">Type Struk:</label>
+          <select id="filterSelectKA" class="form-select form-select-sm border-danger bg-light fw-bold" onchange="filterDropdownKA()">
+            <option value="KANTOR">Kantor</option>
+            <option value="GABUNGAN">Gabungan</option>
+            <option value="SEMUA">Semua</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small mb-1 text-danger">Filter No. Resi / Nopol:</label>
+          <select id="selectNopolKA" class="form-select form-select-sm border-danger fw-bold" onchange="renderStrukKA()">
+            <option value="">-- Pilih Berdasarkan No. Resi --</option>
+          </select>
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0 d-flex align-items-end justify-content-end gap-1">
+          <button class="btn btn-warning btn-sm fw-bold px-2" onclick="editStrukKA()"><i class="fa-solid fa-pen-to-square me-1"></i> Edit</button>
+          <button class="btn btn-success btn-sm fw-bold px-2" onclick="shareWhatsAppKA()"><i class="fa-brands fa-whatsapp me-1"></i> WA</button>
+          <button class="btn btn-dark btn-sm fw-bold px-3" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> PRINT</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="d-flex flex-wrap justify-content-center align-items-start gap-4">
+      <div class="area-struk print-area mx-auto" id="boxStrukKA">
+        <div class="receipt-header">
+          <div class="brand-title">BARAKA EXPRESS</div>
+          <div class="text-muted small fw-bold tracking-wider" style="font-size: 11pt !important; text-transform: uppercase;">PORT MADIUN</div>
+          <div><span class="badge-type">RINCIAN UJ ARMADA KANTOR</span></div>
+        </div>
+        
+        <div class="receipt-section-title">Informasi Dokumen & Awak</div>
+        <div class="receipt-row"><span class="label">No. Resi</span><span class="value" id="kaNoResi">-</span></div>
+        <div class="receipt-row"><span class="label">No. Surat Jalan</span><span class="value" id="kaNoSJ">-</span></div>
+        <div class="receipt-row"><span class="label">Supir 1 / Supir 2</span><span class="value"><span id="kaSopir1">-</span> / <span id="kaSopir2">-</span></span></div>
+        
+        <div class="receipt-section-title">Detail Perjalanan</div>
+        <div class="receipt-row"><span class="label">Tanggal</span><span class="value" id="kaTgl">-</span></div>
+        <div class="receipt-row"><span class="label">Nomor Polisi</span><span class="value" id="kaNopol">-</span></div>
+        <div class="receipt-row"><span class="label">Tipe Kendaraan</span><span class="value" id="kaType">-</span></div>
+        <div class="receipt-row"><span class="label">Rute Perjalanan</span><span class="value" id="kaRute">-</span></div>
+        <div class="receipt-row"><span class="label">Jarak / Waktu Tempuh</span><span class="value"><span id="kaJarak">0</span> Km (<span id="kaWaktuTempuh">0</span> Hari)</span></div>
+        <div class="receipt-row"><span class="label">Ritasi</span><span class="value" id="kaRitasi">0</span></div>
+        
+        <div class="receipt-section-title">Komponen Biaya & Gaji</div>
+        <div class="receipt-row" id="row-kaUangSaku"><span class="label">Uang Saku: <span id="kaJmlOrgUangSaku">0</span> Orang x Rp <span id="kaNomUangSaku">0</span></span><span class="value">= Rp <span id="kaTotalUangSaku">0</span></span></div>
+        <div class="receipt-row" id="row-kaGajiAsal"><span class="label">Gaji Asal: <span id="kaJmlOrgGajiAsal">0</span> Orang x Rp <span id="kaNomGajiAsal">0</span></span><span class="value">= Rp <span id="kaTotalGajiAsal">0</span></span></div>
+        <div class="receipt-row text-muted" id="row-kaKetGajiAsal" style="margin-top:-2px; margin-bottom:4px;"><span class="label" style="font-size:11pt !important; font-style:italic;" colspan="2">Ket: <span id="kaKetGajiAsalText">-</span></span></div>
+        
+        <div class="receipt-row" id="row-kaUangBongkarMuat"><span class="label">Uang Bongkar/Muat</span><span class="value">= Rp <span id="kaUangBongkarMuat">0</span></span></div>
+        
+        <div class="receipt-row" id="row-kaUangInap">
+          <span class="label">Uang Inap: <span id="kaJmlOrgUangInap">0</span> Orang x Rp <span id="kaNomUangInap">0</span></span>
+          <span class="value">= Rp <span id="kaTotalUangInap">0</span></span>
+        </div>
+        <div class="receipt-row text-muted" id="row-kaKetUangInap" style="margin-top:-2px; margin-bottom:4px;">
+          <span class="label" style="font-size:11pt !important; font-style:italic; width:100%;">(Lokasi: <span id="kaKetInapLokasiText">-</span> | Waktu: <span id="kaKetInapWaktuText">-</span>)</span>
+        </div>
+
+        <div class="receipt-row" id="row-kaNomTitikan"><span class="label">Nominal Titikan (<span id="kaKetTitikan">-</span>)</span><span class="value">= Rp <span id="kaNomTitikan">0</span></span></div>
+        <div class="receipt-row" id="row-kaToll"><span class="label">Toll</span><span class="value">= Rp <span id="kaToll">0</span></span></div>
+        <div class="receipt-row" id="row-kaPotongan"><span class="label">Potongan</span><span class="value">=-Rp <span id="kaPotongan">0</span></span></div>
+        <div class="receipt-row" id="row-kaBbmBonus"><span class="label">BBM Dan Bonus</span><span class="value">= Rp <span id="kaBbmBonus">0</span></span></div>
+        <div class="receipt-row" id="row-kaKuranganTol"><span class="label">Kurangan Tol</span><span class="value">= +Rp <span id="kaKuranganTol">0</span></span></div>
+        <div class="receipt-row" id="row-kaKelebihanTol"><span class="label">Kelebihan Tol</span><span class="value">= -Rp <span id="kaKelebihanTol">0</span></span></div>
+        <div class="receipt-row" id="row-kaOperasionalSopir"><span class="label">Operasional Sopir</span><span class="value">= Rp <span id="kaOperasionalSopir">0</span></span></div>
+        <div class="receipt-row" id="row-kaUangJalan"><span class="label">Uang Jalan</span><span class="value">= Rp <span id="kaUangJalan">0</span></span></div>
+        <div class="receipt-row" id="row-kaLainLain"><span class="label">Lain-lain</span><span class="value">= Rp <span id="kaLainLain">0</span></span></div>
+
+        <div class="total-box">
+          TOTAL UANG JALAN<br>
+          <span>RP <span id="kaTotalUJ">0</span></span>
+        </div>
+        
+        <div class="terbilang-box">Terbilang: <span id="kaTerbilang">-</span></div>
+        <div class="text-center text-muted mt-3" style="font-size: 11pt !important;">✔ Dicetak dari Sistem Port Madiun</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. STRUK ARMADA GABUNGAN -->
+  <div id="tab-strukGB" class="tab-pane" style="display:none;">
+    <div class="card p-3 mb-4 bg-white border no-print shadow-sm">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-3">
+          <label class="form-label fw-bold small mb-1 text-danger">Type Struk:</label>
+          <select id="filterSelectGB" class="form-select form-select-sm border-danger bg-light fw-bold" onchange="filterDropdownGB()">
+            <option value="GABUNGAN">Gabungan</option>
+            <option value="KANTOR">Kantor</option>
+            <option value="SEMUA">Semua</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small mb-1 text-danger">Filter No. Resi / Nopol:</label>
+          <select id="selectNopolGB" class="form-select form-select-sm border-danger fw-bold" onchange="renderStrukGB()">
+            <option value="">-- Pilih Berdasarkan No. Resi --</option>
+          </select>
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0 d-flex align-items-end justify-content-end gap-1">
+          <button class="btn btn-warning btn-sm fw-bold px-2" onclick="editStrukGB()"><i class="fa-solid fa-pen-to-square me-1"></i> Edit</button>
+          <button class="btn btn-success btn-sm fw-bold px-2" onclick="shareWhatsAppGB()"><i class="fa-brands fa-whatsapp me-1"></i> WA</button>
+          <button class="btn btn-dark btn-sm fw-bold px-3" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> PRINT</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="d-flex flex-wrap justify-content-center align-items-start gap-4">
+      <div class="area-struk print-area mx-auto" id="boxStrukGB">
+        <div class="receipt-header">
+          <div class="brand-title">BARAKA EXPRESS</div>
+          <div class="text-muted small fw-bold tracking-wider" style="font-size: 11pt !important; text-transform: uppercase;">PORT MADIUN</div>
+          <div><span class="badge-type" style="background: var(--primary-red);">RINCIAN UJ ARMADA GABUNGAN</span></div>
+        </div>
+        
+        <div class="receipt-section-title">Informasi Dokumen & Awak</div>
+        <div class="receipt-row"><span class="label">No. Resi</span><span class="value" id="gbNoResi">-</span></div>
+        <div class="receipt-row"><span class="label">No. Surat Jalan</span><span class="value" id="gbNoSJ">-</span></div>
+        <div class="receipt-row"><span class="label">Sopir 1 / Sopir 2</span><span class="value"><span id="gbSopir1">-</span> / <span id="gbSopir2">-</span></span></div>
+        
+        <div class="receipt-section-title">Detail Perjalanan</div>
+        <div class="receipt-row"><span class="label">Tanggal</span><span class="value" id="gbTgl">-</span></div>
+        <div class="receipt-row"><span class="label">Nomor Polisi</span><span class="value" id="gbNopol">-</span></div>
+        <div class="receipt-row"><span class="label">Tipe Kendaraan</span><span class="value" id="gbType">-</span></div>
+        <div class="receipt-row"><span class="label">Rute</span><span class="value" id="gbRute">-</span></div>
+        
+        <div class="receipt-section-title">Komponen Uang Jalan</div>
+        <div class="receipt-row" id="row-gbGantiTolAsal"><span class="label">Ganti Tol Asal</span><span class="value">= Rp <span id="gbGantiTolAsal">0</span></span></div>
+        <div class="receipt-row" id="row-gbPelunasanMarunda"><span class="label">Pelunasan Uang Jalan Marunda</span><span class="value">= Rp <span id="gbPelunasanMarunda">0</span></span></div>
+        <div class="receipt-row" id="row-gbNomTitikan"><span class="label">Nominal Titikan (<span id="gbKetTitikan">-</span>)</span><span class="value">= Rp <span id="gbNomTitikan">0</span></span></div>
+        <div class="receipt-row" id="row-gbToll"><span class="label">Toll</span><span class="value">= Rp <span id="gbToll">0</span></span></div>
+        <div class="receipt-row" id="row-gbOperasionalSopir"><span class="label">Operasional Sopir</span><span class="value">= Rp <span id="gbOperasionalSopir">0</span></span></div>
+        <div class="receipt-row" id="row-gbUangJalan"><span class="label">Uang Jalan</span><span class="value">= Rp <span id="gbUangJalan">0</span></span></div>
+        <div class="receipt-row" id="row-gbPotongan"><span class="label">Potongan</span><span class="value">=-Rp <span id="gbPotongan">0</span></span></div>
+        <div class="receipt-row" id="row-gbBbmBonus"><span class="label">BBM dan Bonus</span><span class="value">= Rp <span id="gbBbmBonus">0</span></span></div>
+        <div class="receipt-row" id="row-gbLainLain"><span class="label">Lain-lain</span><span class="value">= Rp <span id="gbLainLain">0</span></span></div>
+
+        <div class="total-box">
+          TOTAL UANG JALAN<br>
+          <span>RP <span id="gbTotalUJ">0</span></span>
+        </div>
+        
+        <div class="terbilang-box">Terbilang: <span id="gbTerbilang">-</span></div>
+        <div class="text-center text-muted mt-3" style="font-size: 11pt !important;">✔ Dicetak dari Sistem Port Madiun</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. TAB REKAPITULASI SEPARATE / SENDIRI -->
+  <div id="tab-rekapSeparateTab" class="tab-pane" style="display:none;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="fw-bold">Rekapitulasi (Tabel)</h1>
+      <button class="btn btn-dark btn-sm fw-bold no-print" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Cetak Rekapitulasi</button>
+    </div>
+    
+    <div class="d-flex justify-content-center">
+      <div class="receipt-container print-area w-100" style="max-width: 650px; background: #ffffff; border: 2px solid #212529;">
+        <div class="receipt-header mb-2">
+          <div class="brand-title" style="font-size: 14pt !important;">REKAPITULASI TRUCK KANTOR/GABUNGAN</div>
+          <div class="text-muted small fw-bold" style="font-size: 11pt !important;">Sesuai Format Laporan Port Madiun</div>
+        </div>
+        <div id="rekapSeparateContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. TAB RINCIAN OPERASIONAL TRUK -->
+  <div id="tab-operationalSummaryTab" class="tab-pane" style="display:none;">
+    <div class="card-operasional">
+        <div class="filter-container">
+            <div class="filter-group">
+                <label for="pilihTanggal" class="fw-bold small me-2">Pilih Tanggal:</label>
+                <input type="date" id="pilihTanggal" class="input-date form-control form-control-sm d-inline-block w-auto">
+                <button type="button" id="btnTampilkan" class="btn btn-primary btn-sm btn-filter ms-2">Tampilkan</button>
+            </div>
+            <input type="hidden" id="hidden-id-operasional" value="OP-2026-0811">
+        </div>
+
+        <h3 id="judulRincianOperasional">Rincian Total Keseluruhan Operasional</h3>
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Kategori</th>
+                    <th class="text-right">Nominal</th>
+                </tr>
+            </thead>
+            <tbody id="bodyRincianOperasional">
+                <tr><td>BBM / Bonus</td><td class="text-right" id="opBbmBonus">Rp 0</td></tr>
+                <tr><td>Uang Bongkar / Muat</td><td class="text-right" id="opBongkarMuat">Rp 0</td></tr>
+                <tr class="row-total"><td colspan="2" style="background-color: #f1f3f5; font-style: italic;">Rincian Toll:</td></tr>
+                <tr><td style="padding-left: 20px;">- Toll Asal</td><td class="text-right" id="opTollAsal">Rp 0</td></tr>
+                <tr><td style="padding-left: 20px;">- Kurangan Toll</td><td class="text-right" id="opKuranganToll">Rp 0</td></tr>
+                <tr><td style="padding-left: 20px;">- Kelebihan Toll</td><td class="text-right" id="opKelebihanToll">Rp 0</td></tr>
+                <tr><td>Titikan</td><td class="text-right" id="opTitikan">Rp 0</td></tr>
+                <tr><td>Uang Saku (1/2 Orang)</td><td class="text-right" id="opUangSaku">Rp 0</td></tr>
+                <tr class="row-total"><td>TOTAL KESELURUHAN OPERASIONAL</td><td class="text-right" id="opTotalKeseluruhan">Rp 0</td></tr>
+                <tr><td>Potongan</td><td class="text-right" id="opPotongan">Rp 0</td></tr>
+                <tr><td>Gaji Asal </td><td class="text-right" id="opGajiAsal">Rp 0</td></tr>
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+  <!-- 8. TAB BACKUP & RESTORE DATA -->
+  <div id="tab-backupRestoreTab" class="tab-pane" style="display:none;">
+    <h2 class="fw-bold mb-4"><i class="fa-solid fa-database text-danger me-2"></i>Backup & Restore Data</h2>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card p-4 h-100 shadow-sm border">
+          <div class="card-body">
+            <h4 class="fw-bold text-primary mb-3"><i class="fa-solid fa-download me-2"></i>Download Backup Data</h4>
+            <p class="text-muted mb-4">Simpan seluruh data rekapitulasi Anda ke dalam file berformat JSON sebagai cadangan yang aman di perangkat Anda.</p>
+            <button class="btn btn-primary fw-bold px-4 py-2" onclick="downloadBackupJSON()">
+              <i class="fa-solid fa-file-arrow-down me-2"></i> Download File Backup (.json)
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card p-4 h-100 shadow-sm border">
+          <div class="card-body">
+            <h4 class="fw-bold text-success mb-3"><i class="fa-solid fa-upload me-2"></i>Restore Data</h4>
+            <p class="text-muted mb-3">Pulihkan data dari file backup JSON sebelumnya. <span class="text-danger fw-bold">Perhatian:</span> Data yang ada saat ini akan digantikan atau ditambahkan dengan data dari file.</p>
+            <div class="mb-3">
+              <input type="file" id="restoreFileJSON" class="form-control form-control-sm fw-bold" accept=".json">
+            </div>
+            <button class="btn btn-success fw-bold px-4 py-2" onclick="restoreBackupJSON()">
+              <i class="fa-solid fa-file-arrow-up me-2"></i> Proses Restore Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let globalData = [];
+let activeEditIndex = -1;
+
+function initApp() {
+  loadDataFromLocalStorage();
+  if (globalData.length === 0) {
+    globalData.push({
+      tipeStruk: 'KANTOR',
+      tanggal: '10/08/2026',
+      noResi: 'RESI-001',
+      suratJalan: 'SJ-001',
+      nopol: 'L 1234 ABC',
+      sopir1: 'Sopir 1',
+      sopir2: 'Sopir 2',
+      tipeMobil: 'CDD',
+      rute: 'Madiun - Jakarta',
+      titikan: '-',
+      ketTitikan: '-',
+      nomTitikan: 0,
+      tipeTujuan: 'Cabang',
+      wilayah: 'Jatim',
+      jarak: '600',
+      waktuTempuh: '2',
+      toll: 545000,
+      operasionalSopir: 0,
+      uangJalan: 0,
+      ritasi: '1',
+      ketTol: '-',
+      potongan: 30000,
+      bbmBonus: 615000,
+      lainLain: 0,
+      jmlOrgUangSaku: '2',
+      nomUangSaku: 35000,
+      jmlOrgGajiAsal: '2',
+      nomGajiAsal: 25000,
+      ketGajiAsal: '-',
+      kuranganTol: 545000,
+      kelebihanTol: -545000,
+      uangBongkarMuat: 70000,
+      jmlOrgUangInap: '2',
+      nomUangInap: 40000,
+      ketInapLokasi: 'Malang',
+      ketInapWaktu: '1 Hari',
+      gantiTolAsal: 0,
+      pelunasanMarunda: 0
+    });
+
+    globalData.push({
+      tipeStruk: 'GABUNGAN',
+      tanggal: '11/08/2026',
+      noResi: 'RESI-002',
+      suratJalan: 'SJ-002',
+      nopol: 'L 5678 XYZ',
+      sopir1: 'Sopir 1',
+      sopir2: 'Sopir 2',
+      tipeMobil: 'FUSO',
+      rute: 'Madiun - Surabaya',
+      titikan: '-',
+      ketTitikan: '-',
+      nomTitikan: 0,
+      tipeTujuan: 'Cabang',
+      wilayah: 'Jatim',
+      jarak: '200',
+      waktuTempuh: '1',
+      toll: 200000,
+      operasionalSopir: 0,
+      uangJalan: 0,
+      ritasi: '1',
+      ketTol: '-',
+      potongan: 0,
+      bbmBonus: 0,
+      lainLain: 0,
+      jmlOrgUangSaku: '2',
+      nomUangSaku: 0,
+      jmlOrgGajiAsal: '2',
+      nomGajiAsal: 25000,
+      ketGajiAsal: '-',
+      kuranganTol: 200000,
+      kelebihanTol: -200000,
+      uangBongkarMuat: 50000,
+      jmlOrgUangInap: '1',
+      nomUangInap: 40000,
+      ketInapLokasi: '-',
+      ketInapWaktu: '1 hari',
+      gantiTolAsal: 0,
+      pelunasanMarunda: 0
+    });
+
+    globalData.forEach(item => {
+      item.totalUangJalan = hitungTotalBaris(item);
+    });
+  }
+  renderTableAndDropdowns();
+  calculateTotalUJForm();
+}
+
+function loadDataFromLocalStorage() {
+  let saved = localStorage.getItem('baraka_port_madiun_data_v12_9');
+  if (saved) {
+    try { globalData = JSON.parse(saved); } catch(e) { globalData = []; }
+  }
+}
+
+function saveDataToLocalStorage() {
+  localStorage.setItem('baraka_port_madiun_data_v12_9', JSON.stringify(globalData));
+}
+
+function switchTab(tabId, event) {
+  if(event) event.preventDefault();
+  document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+  document.getElementById('tab-' + tabId).style.display = 'block';
+  document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+  
+  if(event && event.currentTarget) {
+    event.currentTarget.classList.add('active');
+  } else {
+    document.querySelectorAll('.sidebar .nav-link').forEach(el => {
+      if(el.getAttribute('onclick') && el.getAttribute('onclick').includes(tabId)) {
+        el.classList.add('active');
+      }
+    });
+  }
+
+  if(tabId === 'strukKA') filterDropdownKA();
+  if(tabId === 'strukGB') filterDropdownGB();
+  if(tabId === 'operationalSummaryTab') updateOperationalSummary();
+  if(tabId === 'rekapSeparateTab') renderSideTableDualDate('rekapSeparateContent');
+}
+
+function parseNum(val) {
+  if (val === null || val === undefined || val === '') return 0;
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
+  let str = String(val).trim();
+  let isNegative = str.startsWith('-');
+  let cleanStr = str.replace(/[^0-9,-]/g, '').replace(/,/g, '.');
+  let num = parseFloat(cleanStr);
+  return isNaN(num) ? 0 : (isNegative && num > 0 ? -num : num);
+}
+
+function formatRupiah(angka) {
+    return angka ? "Rp " + Number(angka).toLocaleString('id-ID') : "Rp 0";
+}
+
+function formatRupiahTable(angka) {
+  let cleanNum = parseFloat(angka);
+  if (isNaN(cleanNum)) return '0';
+  return cleanNum.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function handleExcelPaste() {
+  let pastedText = document.getElementById('excelPasteInput').value;
+  if (!pastedText.trim()) return;
+  let rows = pastedText.split('\n');
+  
+  let addedCount = 0;
+  rows.forEach(rowStr => {
+    if (!rowStr.trim()) return;
+    let cols = rowStr.split('\t');
+    if (cols.length < 5) cols = rowStr.split(/,| {2,}/);
+    
+    if (cols.length >= 4) {
+      try {
+        let newItem = {
+          tipeStruk: 'KANTOR',
+          tanggal: cols[0] || getTodayDateStr(),
+          noResi: cols[1] || '-',
+          suratJalan: cols[2] || '-',
+          nopol: cols[3] || '-',
+          sopir1: cols[4] || '-',
+          sopir2: cols[5] || '-',
+          tipeMobil: cols[6] || 'CDD',
+          rute: cols[7] || '-',
+          titikan: cols[8] || '-',
+          ketTitikan: cols[9] || '-',
+          nomTitikan: parseNum(cols[10]),
+          tipeTujuan: cols[11] || '-',
+          wilayah: cols[12] || '-',
+          jarak: cols[13] || '0',
+          waktuTempuh: cols[14] || '0',
+          toll: parseNum(cols[15]) || 545000,
+          operasionalSopir: parseNum(cols[16]),
+          uangJalan: parseNum(cols[17]),
+          ritasi: cols[19] || '0',
+          ketTol: cols[20] || '-',
+          potongan: parseNum(cols[21]) || 30000,
+          bbmBonus: parseNum(cols[22]) || 615000,
+          lainLain: parseNum(cols[23]),
+          jmlOrgUangSaku: cols[24] || '2',
+          nomUangSaku: parseNum(cols[25]) || 35000,
+          jmlOrgGajiAsal: cols[26] || '2',
+          nomGajiAsal: parseNum(cols[27]) || 25000,
+          ketGajiAsal: cols[28] || '-',
+          kuranganTol: parseNum(cols[29]),
+          kelebihanTol: parseNum(cols[30]),
+          uangBongkarMuat: parseNum(cols[31]) || 70000,
+          jmlOrgUangInap: cols[32] || '2',
+          nomUangInap: parseNum(cols[33]) || 40000,
+          ketInapLokasi: cols[34] || 'Malang',
+          ketInapWaktu: cols[35] || '1 hari',
+          gantiTolAsal: parseNum(cols[36]),
+          pelunasanMarunda: parseNum(cols[37])
+        };
+        newItem.totalUangJalan = hitungTotalBaris(newItem);
+        globalData.push(newItem);
+        addedCount++;
+      } catch (e) {
+        console.warn("Gagal parse baris: ", rowStr);
+      }
+    }
+  });
+  
+  if (addedCount > 0) {
+    document.getElementById('excelPasteInput').value = "";
+    saveDataToLocalStorage();
+    renderTableAndDropdowns();
+    alert(`Berhasil menambahkan ${addedCount} baris data dari paste excel.`);
+  }
+}
+
+function getTodayDateStr() {
+  let d = new Date();
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+}
+
+function hitungTotalBaris(item) {
+  let totalUangSaku = parseNum(item.jmlOrgUangSaku) * parseNum(item.nomUangSaku);
+  let totalGajiAsal = parseNum(item.jmlOrgGajiAsal) * parseNum(item.nomGajiAsal);
+  let totalUangInap = parseNum(item.jmlOrgUangInap) * parseNum(item.nomUangInap);
+  let kelebihanTolVal = parseNum(item.kelebihanTol);
+  if (kelebihanTolVal > 0) kelebihanTolVal = -kelebihanTolVal;
+
+  return totalUangSaku + totalGajiAsal + totalUangInap +
+         parseNum(item.nomTitikan) + parseNum(item.toll) + 
+         parseNum(item.kuranganTol) + kelebihanTolVal + 
+         parseNum(item.uangBongkarMuat) +
+         parseNum(item.gantiTolAsal) + parseNum(item.pelunasanMarunda) +
+         parseNum(item.operasionalSopir) + parseNum(item.uangJalan) - 
+         parseNum(item.potongan) + parseNum(item.bbmBonus) + parseNum(item.lainLain);
+}
+
+function getVal(id) { return document.getElementById(id).value; }
+function setVal(id, val) { document.getElementById(id).value = val; }
+
+function calculateTotalUJForm() {
+  let item = {
+    jmlOrgUangSaku: getVal('editJmlOrgUangSaku'), nomUangSaku: getVal('editNomUangSaku'),
+    jmlOrgGajiAsal: getVal('editJmlOrgGajiAsal'), nomGajiAsal: getVal('editNomGajiAsal'),
+    nomTitikan: getVal('editNomTitikan'), toll: getVal('editToll'),
+    kuranganTol: getVal('editKuranganTol'), kelebihanTol: getVal('editKelebihanTol'),
+    uangBongkarMuat: getVal('editUangBongkarMuat'),
+    jmlOrgUangInap: getVal('editJmlOrgUangInap'), nomUangInap: getVal('editNomUangInap'),
+    gantiTolAsal: getVal('editGantiTolAsal'), pelunasanMarunda: getVal('editPelunasanMarunda'),
+    operasionalSopir: getVal('editOperasionalSopir'), uangJalan: getVal('editUangJalan'),
+    potongan: getVal('editPotongan'), bbmBonus: getVal('editBbmBonus'), lainLain: getVal('editLainLain')
+  };
+  setVal('editTotalUangJalan', formatRupiahTable(hitungTotalBaris(item)));
+}
+
+function terbilang(nilai) {
+  let angka = Math.abs(parseNum(nilai));
+  let baca = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+  let hasil = "";
+  if (angka < 12) hasil = baca[angka];
+  else if (angka < 20) hasil = terbilang(angka - 10) + " belas";
+  else if (angka < 100) hasil = terbilang(Math.floor(angka / 10)) + " puluh " + terbilang(angka % 10);
+  else if (angka < 200) hasil = "seratus " + terbilang(angka - 100);
+  else if (angka < 1000) hasil = terbilang(Math.floor(angka / 100)) + " ratus " + terbilang(angka % 100);
+  else if (angka < 1000000) hasil = terbilang(Math.floor(angka / 1000)) + " ribu " + terbilang(angka % 1000);
+  else if (angka < 1000000000) hasil = terbilang(Math.floor(angka / 1000000)) + " juta " + terbilang(angka % 1000000);
+  return hasil.trim() || "nol";
+}
+
+function clearPasteData() {
+  if (confirm("Yakin ingin MENGHAPUS SELURUH DATA?")) {
+    globalData = [];
+    localStorage.removeItem('baraka_port_madiun_data_v12_9');
+    renderTableAndDropdowns();
+  }
+}
+
+function renderTableAndDropdowns() {
+  let rekapBody = document.getElementById('rekapTableBody');
+  let searchSelect = document.getElementById('searchNopolSelect');
+  let filterVal = document.getElementById('filterTipeStruk').value;
+
+  rekapBody.innerHTML = '';
+  searchSelect.innerHTML = '<option value="">-- Buat Baru / Cari Data Tersimpan --</option>';
+  
+  document.getElementById('dropdownNopol').innerHTML = '<option value="">Pilih</option>';
+  document.getElementById('dropdownRute').innerHTML = '<option value="">Pilih</option>';
+
+  document.getElementById('statTotalArmada').innerText = globalData.length;
+
+  if (globalData.length === 0) {
+    rekapBody.innerHTML = '<tr><td colspan="40" class="text-center text-muted py-4 fw-bold">Belum ada data tersimpan. Silakan input form atau paste excel.</td></tr>';
+    document.getElementById('tableFooter').style.display = 'none';
+    filterDropdownKA();
+    filterDropdownGB();
+    return;
+  }
+  document.getElementById('tableFooter').style.display = 'table-footer-group';
+
+  let sums = { titikan:0, tol:0, ops:0, uj:0, total:0, pot:0, bbm:0, lain:0, uangSaku:0, gajiAsal:0, kurangTol:0, lebihTol:0, bongkarMuat:0, uangInap:0, gantiTol:0, pelMarunda:0 };
+  let uniqueNopols = new Set(), uniqueRutes = new Set();
+  let countDisplayed = 0;
+
+  globalData.forEach((item, index) => {
+    if (item.nopol && item.nopol !== '-') uniqueNopols.add(item.nopol);
+    if (item.rute && item.rute !== '-') uniqueRutes.add(item.rute);
+
+    let optText = `[${item.noResi}] ${item.nopol} — ${item.rute} (${item.tipeStruk})`;
+    searchSelect.add(new Option(optText, index));
+
+    if (filterVal !== 'SEMUA' && item.tipeStruk !== filterVal) return;
+    countDisplayed++;
+
+    let tVal = hitungTotalBaris(item);
+    let totUs = parseNum(item.jmlOrgUangSaku) * parseNum(item.nomUangSaku);
+    let totGa = parseNum(item.jmlOrgGajiAsal) * parseNum(item.nomGajiAsal);
+    let totInap = parseNum(item.jmlOrgUangInap) * parseNum(item.nomUangInap);
+
+    sums.titikan += parseNum(item.nomTitikan); sums.tol += parseNum(item.toll);
+    sums.ops += parseNum(item.operasionalSopir); sums.uj += parseNum(item.uangJalan);
+    sums.pot += parseNum(item.potongan); sums.bbm += parseNum(item.bbmBonus);
+    sums.lain += parseNum(item.lainLain); sums.total += tVal;
+    sums.uangSaku += totUs; sums.gajiAsal += totGa;
+    sums.kurangTol += parseNum(item.kuranganTol); sums.lebihTol += parseNum(item.kelebihanTol);
+    sums.bongkarMuat += parseNum(item.uangBongkarMuat); sums.uangInap += totInap;
+    sums.gantiTol += parseNum(item.gantiTolAsal); sums.pelMarunda += parseNum(item.pelunasanMarunda);
+
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="text-center">
+        <button class="btn btn-warning btn-sm p-1 me-1 fw-bold" onclick="editRowData(${index})"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button class="btn btn-danger btn-sm p-1 fw-bold" onclick="deleteRowData(${index})"><i class="fa-solid fa-trash"></i> Hapus</button>
+      </td>
+      <td class="text-center"><span class="badge ${item.tipeStruk==='GABUNGAN'?'bg-danger':'bg-dark'}">${item.tipeStruk}</span></td>
+      <td>${item.tanggal}</td><td><b>${item.noResi}</b></td><td>${item.suratJalan}</td><td>${item.nopol}</td>
+      <td>${item.sopir1}</td><td>${item.sopir2}</td><td>${item.tipeMobil}</td>
+      <td>${item.rute}</td><td>${item.titikan}</td><td>${item.ketTitikan}</td><td>Rp ${formatRupiahTable(item.nomTitikan)}</td>
+      <td>${item.tipeTujuan}</td><td>${item.wilayah}</td><td>${item.jarak}</td><td>${item.waktuTempuh}</td>
+      <td>Rp ${formatRupiahTable(item.toll)}</td><td>Rp ${formatRupiahTable(item.operasionalSopir)}</td><td>Rp ${formatRupiahTable(item.uangJalan)}</td>
+      <td class="fw-bold text-danger">Rp ${formatRupiahTable(tVal)}</td><td>${item.ritasi}</td><td>${item.ketTol}</td>
+      <td class="text-danger">- Rp ${formatRupiahTable(Math.abs(parseNum(item.potongan)))}</td><td>Rp ${formatRupiahTable(item.bbmBonus)}</td><td>Rp ${formatRupiahTable(item.lainLain)}</td>
+      <td>${item.jmlOrgUangSaku}</td><td>Rp ${formatRupiahTable(item.nomUangSaku)}</td>
+      <td>${item.jmlOrgGajiAsal}</td><td>Rp ${formatRupiahTable(item.nomGajiAsal)}</td><td>${item.ketGajiAsal}</td>
+      <td class="text-success">Rp ${formatRupiahTable(item.kuranganTol)}</td><td class="text-danger">-Rp ${formatRupiahTable(Math.abs(item.kelebihanTol))}</td>
+      <td>Rp ${formatRupiahTable(item.uangBongkarMuat)}</td>
+      <td>${item.jmlOrgUangInap}</td><td>Rp ${formatRupiahTable(item.nomUangInap)}</td>
+      <td>${item.ketInapLokasi || '-'}</td><td>${item.ketInapWaktu || '1 hari'}</td>
+      <td>Rp ${formatRupiahTable(item.gantiTolAsal)}</td><td>Rp ${formatRupiahTable(item.pelunasanMarunda)}</td>
+    `;
+    rekapBody.appendChild(tr);
+  });
+
+  if (countDisplayed === 0) rekapBody.innerHTML = `<tr><td colspan="40" class="text-center py-3 fw-bold">Tidak ada data untuk filter ini.</td></tr>`;
+
+  uniqueNopols.forEach(n => document.getElementById('dropdownNopol').add(new Option(n, n)));
+  uniqueRutes.forEach(r => document.getElementById('dropdownRute').add(new Option(r, r)));
+
+  filterDropdownKA();
+  filterDropdownGB();
+
+  document.getElementById('tableFooter').innerHTML = `
+    <tr><td colspan="12" class="text-center fw-bold">TOTAL KESELURUHAN</td>
+    <td>Rp ${formatRupiahTable(sums.titikan)}</td><td colspan="4"></td>
+    <td>Rp ${formatRupiahTable(sums.tol)}</td><td>Rp ${formatRupiahTable(sums.ops)}</td><td>Rp ${formatRupiahTable(sums.uj)}</td>
+    <td class="text-danger">Rp ${formatRupiahTable(sums.total)}</td><td colspan="2"></td>
+    <td class="text-danger">- Rp ${formatRupiahTable(Math.abs(sums.pot))}</td><td>Rp ${formatRupiahTable(sums.bbm)}</td><td>Rp ${formatRupiahTable(sums.lain)}</td>
+    <td>-</td><td>Rp ${formatRupiahTable(sums.uangSaku)}</td><td>-</td><td>Rp ${formatRupiahTable(sums.gajiAsal)}</td><td>-</td>
+    <td class="text-success">Rp ${formatRupiahTable(sums.kurangTol)}</td><td class="text-danger">-Rp ${formatRupiahTable(Math.abs(sums.lebihTol))}</td>
+    <td>Rp ${formatRupiahTable(sums.bongkarMuat)}</td><td>-</td><td>Rp ${formatRupiahTable(sums.uangInap)}</td><td colspan="2"></td>
+    <td>Rp ${formatRupiahTable(sums.gantiTol)}</td><td>Rp ${formatRupiahTable(sums.pelMarunda)}</td></tr>
+  `;
+  updateOperationalSummary();
+  renderSideTableDualDate('rekapSeparateContent');
+}
+
+function updateOperationalSummary() {
+  let totBbmBonus = 0, totBongkarMuat = 0, totToll = 0, totKuranganToll = 0, totKelebihanToll = 0, totTitikan = 0, totUangSaku = 0;
+  let totPotongan = 0, totGajiAsal = 0;
+
+  globalData.forEach(item => {
+    totBbmBonus += parseNum(item.bbmBonus);
+    totBongkarMuat += parseNum(item.uangBongkarMuat);
+    totToll += parseNum(item.toll);
+    totKuranganToll += parseNum(item.kuranganTol);
+    totKelebihanToll += parseNum(item.kelebihanTol);
+    totTitikan += parseNum(item.nomTitikan);
+    totUangSaku += parseNum(item.jmlOrgUangSaku) * parseNum(item.nomUangSaku);
+    totPotongan += parseNum(item.potongan);
+    totGajiAsal += parseNum(item.jmlOrgGajiAsal) * parseNum(item.nomGajiAsal);
+  });
+
+  let totalKeseluruhanOperasional = totBbmBonus + totBongkarMuat + totToll + totKuranganToll + totKelebihanToll + totTitikan + totUangSaku;
+
+  document.getElementById('opBbmBonus').innerText = formatRupiah(totBbmBonus);
+  document.getElementById('opBongkarMuat').innerText = formatRupiah(totBongkarMuat);
+  document.getElementById('opTollAsal').innerText = formatRupiah(totToll);
+  document.getElementById('opKuranganToll').innerText = formatRupiah(totKuranganToll);
+  document.getElementById('opKelebihanToll').innerText = (totKelebihanToll < 0 ? "-" : "") + formatRupiah(Math.abs(totKelebihanToll));
+  document.getElementById('opTitikan').innerText = formatRupiah(totTitikan);
+  document.getElementById('opUangSaku').innerText = formatRupiah(totUangSaku);
+  document.getElementById('opTotalKeseluruhan').innerText = formatRupiah(totalKeseluruhanOperasional);
+  document.getElementById('opPotongan').innerText = (totPotongan < 0 ? "-" : "") + formatRupiah(Math.abs(totPotongan));
+  document.getElementById('opGajiAsal').innerText = formatRupiah(totGajiAsal);
+}
+
+document.getElementById('btnTampilkan').addEventListener('click', function() {
+    const inputTanggal = document.getElementById('pilihTanggal').value;
+    
+    if (!inputTanggal) {
+        alert("Silakan pilih tanggal terlebih dahulu!");
+        return;
+    }
+
+    const bagianTgl = inputTanggal.split('-'); 
+    const formatTarget1 = `${bagianTgl[2]}/${bagianTgl[1]}/${bagianTgl[0]}`; 
+    const formatTarget2 = `${bagianTgl[2]} ${bagianTgl[1]} ${bagianTgl[0]}`; 
+
+    let totalBbmBonus = 0;
+    let totalBongkarMuat = 0;
+    let totalTollAsal = 0;
+    let totalKuranganToll = 0;
+    let totalKelebihanToll = 0;
+    let totalTitikan = 0;
+    let totalUangSaku = 0;
+    let totalPotongan = 0;
+    let totalGajiAsal = 0;
+    let jumlahDataDitemukan = 0;
+
+    globalData.forEach(item => {
+        let teksTanggalTabel = item.tanggal || ''; 
+
+        if (teksTanggalTabel.includes(formatTarget1) || teksTanggalTabel.includes(formatTarget2) || teksTanggalTabel === formatTarget1) {
+            totalBbmBonus += parseNum(item.bbmBonus);
+            totalBongkarMuat += parseNum(item.uangBongkarMuat);
+            totalTollAsal += parseNum(item.toll);
+            totalKuranganToll += parseNum(item.kuranganTol);
+            totalKelebihanToll += parseNum(item.kelebihanTol);
+            totalTitikan += parseNum(item.nomTitikan);
+            totalUangSaku += parseNum(item.jmlOrgUangSaku) * parseNum(item.nomUangSaku);
+            totalPotongan += parseNum(item.potongan);
+            totalGajiAsal += parseNum(item.jmlOrgGajiAsal) * parseNum(item.nomGajiAsal);
+            jumlahDataDitemukan++;
+        }
+    });
+
+    let totalKeseluruhanOperasional = totalBbmBonus + totalBongkarMuat + totalTollAsal + totalKuranganToll + totalKelebihanToll + totalTitikan + totalUangSaku;
+
+    document.getElementById('opBbmBonus').innerText = formatRupiah(totalBbmBonus);
+    document.getElementById('opBongkarMuat').innerText = formatRupiah(totalBongkarMuat);
+    document.getElementById('opTollAsal').innerText = formatRupiah(totalTollAsal);
+    document.getElementById('opKuranganToll').innerText = formatRupiah(totalKuranganToll);
+    document.getElementById('opKelebihanToll').innerText = (totalKelebihanToll < 0 ? "-" : "") + formatRupiah(Math.abs(totalKelebihanToll));
+    document.getElementById('opTitikan').innerText = formatRupiah(totalTitikan);
+    document.getElementById('opUangSaku').innerText = formatRupiah(totalUangSaku);
+    document.getElementById('opTotalKeseluruhan').innerText = formatRupiah(totalKeseluruhanOperasional);
+    document.getElementById('opPotongan').innerText = (totalPotongan < 0 ? "-" : "") + formatRupiah(Math.abs(totalPotongan));
+    document.getElementById('opGajiAsal').innerText = formatRupiah(totalGajiAsal);
+
+    document.getElementById('judulRincianOperasional').innerText = `Rincian Total Operasional Tanggal: ${formatTarget1} (${jumlahDataDitemukan} Data)`;
+});
+
+function filterDropdownKA() {
+  let selectKA = document.getElementById('selectNopolKA');
+  let filterType = document.getElementById('filterSelectKA').value;
+  selectKA.innerHTML = '<option value="">-- Pilih Berdasarkan No. Resi --</option>';
+
+  globalData.forEach((item, index) => {
+    if (filterType !== 'SEMUA' && item.tipeStruk !== filterType) return;
+    let optText = `[${item.noResi}] ${item.nopol} - ${item.rute}`;
+    selectKA.add(new Option(optText, index));
+  });
+}
+
+function filterDropdownGB() {
+  let selectGB = document.getElementById('selectNopolGB');
+  let filterType = document.getElementById('filterSelectGB').value;
+  selectGB.innerHTML = '<option value="">-- Pilih Berdasarkan No. Resi --</option>';
+
+  globalData.forEach((item, index) => {
+    if (filterType !== 'SEMUA' && item.tipeStruk !== filterType) return;
+    let optText = `[${item.noResi}] ${item.nopol} - ${item.rute}`;
+    selectGB.add(new Option(optText, index));
+  });
+}
+
+function loadDataToEditForm() {
+  let idx = getVal('searchNopolSelect');
+  if (idx === "") return clearEditForm();
+  activeEditIndex = parseInt(idx);
+  let d = globalData[activeEditIndex];
+
+  let fields = ['TipeStruk','Tanggal','NoResi','SuratJalan','Nopol','Sopir1','Sopir2','TipeMobil','Rute','Titikan','KetTitikan','NomTitikan','TipeTujuan','Wilayah','Jarak','WaktuTempuh','Toll','OperasionalSopir','UangJalan','Ritasi','KetTol','Potongan','BbmBonus','LainLain','JmlOrgUangSaku','NomUangSaku','JmlOrgGajiAsal','NomGajiAsal','KetGajiAsal','KuranganTol','KelebihanTol','UangBongkarMuat','JmlOrgUangInap','NomUangInap','KetInapLokasi','KetInapWaktu','GantiTolAsal','PelunasanMarunda'];
+  
+  fields.forEach(f => {
+    let prop = f.charAt(0).toLowerCase() + f.slice(1);
+    let val = d[prop];
+    if(document.getElementById('edit'+f)) setVal('edit'+f, val || '');
+  });
+  calculateTotalUJForm();
+}
+
+function triggerSearchData() {
+  if (getVal('searchNopolSelect')) alert("Data dimuat ke form!");
+  else alert("Pilih data dulu dari dropdown pencarian.");
+}
+
+function clearEditForm() {
+  activeEditIndex = -1;
+  document.querySelectorAll('.form-container input').forEach(el => el.value = "");
+  setVal('editTanggal', getTodayDateStr());
+  setVal('editToll', '545000');
+  setVal('editJmlOrgUangSaku', '2');
+  setVal('editNomUangSaku', '35000');
+  setVal('editJmlOrgGajiAsal', '2');
+  setVal('editNomGajiAsal', '25000');
+  setVal('editUangBongkarMuat', '70000');
+  setVal('editJmlOrgUangInap', '2');
+  setVal('editNomUangInap', '40000');
+  setVal('editKetInapLokasi', 'Malang');
+  setVal('editKetInapWaktu', '1 hari');
+  setVal('editPotongan', '30000');
+  setVal('editBbmBonus', '615000');
+  setVal('editKelebihanTol', '-545000');
+  calculateTotalUJForm();
+}
+
+function getFormData() {
+  return {
+    tipeStruk: getVal('editTipeStruk')||'KANTOR', tanggal: getVal('editTanggal')||getTodayDateStr(),
+    noResi: getVal('editNoResi')||'-', suratJalan: getVal('editSuratJalan')||'-',
+    nopol: getVal('editNopol')||'-', sopir1: getVal('editSopir1')||'-', sopir2: getVal('editSopir2')||'-',
+    tipeMobil: getVal('editTipeMobil')||'-', rute: getVal('editRute')||'-',
+    titikan: getVal('editTitikan')||'-', ketTitikan: getVal('editKetTitikan')||'-',
+    nomTitikan: parseNum(getVal('editNomTitikan')), tipeTujuan: getVal('editTipeTujuan')||'-',
+    wilayah: getVal('editWilayah')||'-', jarak: getVal('editJarak')||'0', waktuTempuh: getVal('editWaktuTempuh')||'0',
+    toll: parseNum(getVal('editToll')), operasionalSopir: parseNum(getVal('editOperasionalSopir')),
+    uangJalan: parseNum(getVal('editUangJalan')), ritasi: getVal('editRitasi')||'0', ketTol: getVal('editKetTol')||'-',
+    potongan: parseNum(getVal('editPotongan')), bbmBonus: parseNum(getVal('editBbmBonus')), lainLain: parseNum(getVal('editLainLain')),
+    jmlOrgUangSaku: getVal('editJmlOrgUangSaku')||'0', nomUangSaku: parseNum(getVal('editNomUangSaku')),
+    jmlOrgGajiAsal: getVal('editJmlOrgGajiAsal')||'0', nomGajiAsal: parseNum(getVal('editNomGajiAsal')),
+    ketGajiAsal: getVal('editKetGajiAsal')||'-', kuranganTol: parseNum(getVal('editKuranganTol')),
+    kelebihanTol: parseNum(getVal('editKelebihanTol')), uangBongkarMuat: parseNum(getVal('editUangBongkarMuat')),
+    jmlOrgUangInap: getVal('editJmlOrgUangInap')||'0', nomUangInap: parseNum(getVal('editNomUangInap')),
+    ketInapLokasi: getVal('editKetInapLokasi')||'', ketInapWaktu: getVal('editKetInapWaktu')||'1 hari',
+    gantiTolAsal: parseNum(getVal('editGantiTolAsal')), pelunasanMarunda: parseNum(getVal('editPelunasanMarunda'))
+  };
+}
+
+function saveNewData() {
+  let d = getFormData();
+  d.totalUangJalan = hitungTotalBaris(d);
+  globalData.push(d);
+  saveDataToLocalStorage(); renderTableAndDropdowns();
+  alert("Data Tersimpan!"); switchTab('rekapTable');
+}
+
+function updateCurrentData() {
+  if (activeEditIndex === -1) return alert("Pilih data yang mau diupdate via dropdown pencarian.");
+  let d = getFormData();
+  d.totalUangJalan = hitungTotalBaris(d);
+  globalData[activeEditIndex] = d;
+  saveDataToLocalStorage(); renderTableAndDropdowns();
+  alert("Data Diperbarui!"); switchTab('rekapTable');
+}
+
+function deleteCurrentData() {
+  if (activeEditIndex === -1) return alert("Pilih data dulu.");
+  if (confirm("Hapus data ini?")) {
+    globalData.splice(activeEditIndex, 1);
+    saveDataToLocalStorage(); clearEditForm(); renderTableAndDropdowns();
+    alert("Terhapus."); switchTab('rekapTable');
+  }
+}
+
+function editRowData(idx) {
+  setVal('searchNopolSelect', idx);
+  loadDataToEditForm(); switchTab('editFormTab');
+}
+
+function deleteRowData(idx) {
+  if(confirm("Hapus baris ini?")) {
+    globalData.splice(idx, 1); saveDataToLocalStorage(); renderTableAndDropdowns();
+  }
+}
+
+function setElText(id, val, prefix='', isRp=false) {
+  let el = document.getElementById(id);
+  if(el) el.innerText = isRp ? prefix + formatRupiahTable(val) : prefix + val;
+}
+function toggleRow(id, val) {
+  let el = document.getElementById(id);
+  if(el) el.style.display = (parseNum(val) === 0) ? 'none' : 'flex';
+}
+
+function renderSideTableDualDate(containerId) {
+  let container = document.getElementById(containerId);
+  if(!container) return;
+
+  if(globalData.length === 0) {
+    container.innerHTML = '<div class="text-center text-muted small py-3">Belum ada data untuk direkap.</div>';
+    return;
+  }
+
+  let groupedByDate = {};
+  globalData.forEach(item => {
+    let tgl = item.tanggal || '10/08/2026';
+    if(!groupedByDate[tgl]) groupedByDate[tgl] = [];
+    groupedByDate[tgl].push(item);
+  });
+
+  let html = `<div style="font-size: 11pt !important;">`;
+
+  for(let tgl in groupedByDate) {
+    html += `<div class="fw-bold text-dark mt-2 mb-1" style="border-bottom: 1px solid #000; padding-bottom:2px;">TANGGAL : ${tgl}</div>`;
+    
+    let sumGaji = 0, sumInap = 0, sumToll = 0, sumKurangToll = 0, sumKelebihanToll = 0, sumBongkar = 0, sumPot = 0;
+
+    groupedByDate[tgl].forEach(item => {
+      let gajiVal = parseNum(item.jmlOrgGajiAsal) * parseNum(item.nomGajiAsal);
+      let inapVal = parseNum(item.jmlOrgUangInap) * parseNum(item.nomUangInap);
+      let tollVal = parseNum(item.toll);
+      let kurangTollVal = parseNum(item.kuranganTol);
+      let kelebihanTollVal = parseNum(item.kelebihanTol);
+      let bongkarVal = parseNum(item.uangBongkarMuat);
+      let potVal = parseNum(item.potongan);
+
+      sumGaji += gajiVal;
+      sumInap += inapVal;
+      sumToll += tollVal;
+      sumKurangToll += kurangTollVal;
+      sumKelebihanToll += kelebihanTollVal;
+      sumBongkar += bongkarVal;
+      sumPot += potVal;
+
+      html += `
+        <div class="mb-1" style="font-size:10pt !important;">
+          <div class="fw-bold">No. Resi       : ${item.noResi}</div>
+          <div class="fw-bold">No. Surat Jalan: ${item.suratJalan}</div>
+          <div>${item.nopol} &nbsp; ${item.rute}</div>
+          <div style="border-top: 1px dashed #000; margin-top: 4px; padding-top: 4px;">
+            ${gajiVal !== 0 ? `Gaji Asal      : Rp ${formatRupiahTable(gajiVal)}<br>` : ''}
+            ${inapVal !== 0 ? `Inap           : Rp ${formatRupiahTable(inapVal)}<br>` : ''}
+            ${kurangTollVal !== 0 ? `Kekurangan Toll: Rp ${formatRupiahTable(kurangTollVal)}<br>` : ''}
+            ${kelebihanTollVal !== 0 ? `Kelebihan Toll : -Rp ${formatRupiahTable(Math.abs(kelebihanTollVal))}<br>` : ''}
+            ${bongkarVal !== 0 ? `Bongkar        : Rp ${formatRupiahTable(bongkarVal)}<br>` : ''}
+            ${potVal !== 0 ? `Pot            : -Rp ${formatRupiahTable(Math.abs(potVal))}` : ''}
+          </div>
+          <div style="border-bottom: 1px dashed #000; margin-bottom: 4px; padding-bottom: 4px;"></div>
+        </div>
+      `;
+    });
+
+    html += `
+      <div class="mt-2 mb-3 pt-1" style="font-size:10pt !important; font-weight: bold;">
+        ${sumGaji !== 0 ? `<div>TOTAL GAJI ASAL  : Rp ${formatRupiahTable(sumGaji)}</div>` : ''}
+        ${sumInap !== 0 ? `<div>TOTAL INAPAN     : Rp ${formatRupiahTable(sumInap)}</div>` : ''}
+        ${sumToll !== 0 ? `<div>TOTAL TOLL       : Rp ${formatRupiahTable(sumToll)}</div>` : ''}
+        ${sumKurangToll !== 0 ? `<div>TOTAL KEKURANGAN TOLL       : Rp ${formatRupiahTable(sumKurangToll)}</div>` : ''}
+        ${sumKelebihanToll !== 0 ? `<div>TOTAL KELEBIHAN TOLL       : -Rp ${formatRupiahTable(Math.abs(sumKelebihanToll))}</div>` : ''}
+        ${sumBongkar !== 0 ? `<div>TOTAL BONGKARAN  : Rp ${formatRupiahTable(sumBongkar)}</div>` : ''}
+        ${sumPot !== 0 ? `<div>TOTAL POTONGAN   : -Rp ${formatRupiahTable(Math.abs(sumPot))}</div>` : ''}
+      </div>
+      <div style="border-bottom: 2px solid #000; margin-bottom: 8px;"></div>
+    `;
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function renderStrukKA() {
+  let idx = getVal('selectNopolKA'); if (idx==="") return;
+  let d = globalData[idx];
+
+  ['NoResi','NoSJ','Sopir1','Sopir2','Tgl','Nopol','Type','Rute','Jarak','WaktuTempuh','Ritasi','KetTitikan','KetTol'].forEach(f => {
+    let prop = f.charAt(0).toLowerCase() + f.slice(1);
+    if(f==='Type') prop = 'tipeMobil'; if(f==='NoSJ') prop = 'suratJalan'; if(f==='Tgl') prop = 'tanggal';
+    setElText('ka'+f, d[prop] || '-');
+  });
+
+  let jmlUs = parseNum(d.jmlOrgUangSaku);
+  let nomUs = parseNum(d.nomUangSaku);
+  let totUs = jmlUs * nomUs;
+  setElText('kaJmlOrgUangSaku', jmlUs);
+  setElText('kaNomUangSaku', formatRupiahTable(nomUs));
+  setElText('kaTotalUangSaku', formatRupiahTable(totUs));
+  toggleRow('row-kaUangSaku', totUs);
+
+  let jmlGa = parseNum(d.jmlOrgGajiAsal);
+  let nomGa = parseNum(d.nomGajiAsal);
+  let totGa = jmlGa * nomGa;
+  setElText('kaJmlOrgGajiAsal', jmlGa);
+  setElText('kaNomGajiAsal', formatRupiahTable(nomGa));
+  setElText('kaTotalGajiAsal', formatRupiahTable(totGa));
+  toggleRow('row-kaGajiAsal', totGa);
+
+  let ketGa = d.ketGajiAsal || '-';
+  setElText('kaKetGajiAsalText', ketGa);
+  let elKetGa = document.getElementById('row-kaKetGajiAsal');
+  if(elKetGa) elKetGa.style.display = (totGa === 0 || ketGa === '-' || ketGa === '') ? 'none' : 'flex';
+
+  let valBm = parseNum(d.uangBongkarMuat);
+  setElText('kaUangBongkarMuat', valBm, '', true);
+  toggleRow('row-kaUangBongkarMuat', valBm);
+
+  let jmlInap = parseNum(d.jmlOrgUangInap);
+  let nomInap = parseNum(d.nomUangInap);
+  let totInap = jmlInap * nomInap;
+  setElText('kaJmlOrgUangInap', jmlInap);
+  setElText('kaNomUangInap', nomInap, '', true);
+  setElText('kaTotalUangInap', totInap, '', true);
+  toggleRow('row-kaUangInap', totInap);
+
+  let locInap = d.ketInapLokasi || '-';
+  let timeInap = d.ketInapWaktu || '1 hari';
+  setElText('kaKetInapLokasiText', locInap);
+  setElText('kaKetInapWaktuText', timeInap);
+  let elKetInap = document.getElementById('row-kaKetUangInap');
+  if(elKetInap) elKetInap.style.display = (totInap === 0) ? 'none' : 'flex';
+
+  let toToggle = ['NomTitikan','Toll','KuranganTol','KelebihanTol','OperasionalSopir','UangJalan','Potongan','BbmBonus','LainLain'];
+  toToggle.forEach(f => {
+    let prop = f.charAt(0).toLowerCase() + f.slice(1);
+    let val = parseNum(d[prop]);
+    toggleRow('row-ka'+f, val);
+    let prefix = (f === 'KelebihanTol' || f === 'Potongan') ? '-' : '';
+    setElText('ka'+f, Math.abs(val), prefix, true);
+  });
+
+  let total = hitungTotalBaris(d);
+  setElText('kaTotalUJ', total, '', true);
+  setElText('kaTerbilang', terbilang(total) + " rupiah");
+}
+
+function renderStrukGB() {
+  let idx = getVal('selectNopolGB'); if (idx==="") return;
+  let d = globalData[idx];
+
+  ['NoResi','NoSJ','Sopir1','Sopir2','Tgl','Nopol','Type','Rute','KetTitikan','KetTol'].forEach(f => {
+    let prop = f.charAt(0).toLowerCase() + f.slice(1);
+    if(f==='Type') prop = 'tipeMobil'; if(f==='NoSJ') prop = 'suratJalan'; if(f==='Tgl') prop = 'tanggal';
+    setElText('gb'+f, d[prop] || '-');
+  });
+  if(!d.tipeMobil) setElText('gbType', 'GABUNGAN');
+
+  let toToggle = ['GantiTolAsal','PelunasanMarunda','NomTitikan','Toll','OperasionalSopir','UangJalan','Potongan','BbmBonus','LainLain'];
+  toToggle.forEach(f => {
+    let prop = f.charAt(0).toLowerCase() + f.slice(1);
+    let val = parseNum(d[prop]);
+    toggleRow('row-gb'+f, val);
+    let prefix = (f === 'Potongan') ? '-' : '';
+    setElText('gb'+f, Math.abs(val), prefix, true);
+  });
+
+  let total = hitungTotalBaris(d);
+  setElText('gbTotalUJ', total, '', true);
+  setElText('gbTerbilang', terbilang(total) + " rupiah");
+}
+
+function editStrukKA() { getVal('selectNopolKA') ? editRowData(getVal('selectNopolKA')) : alert("Pilih struk!"); }
+function editStrukGB() { getVal('selectNopolGB') ? editRowData(getVal('selectNopolGB')) : alert("Pilih struk!"); }
+
+function shareWhatsAppKA() {
+  let idx = getVal('selectNopolKA'); 
+  if (idx === "") return alert("Pilih no resi.");
+  let d = globalData[idx];
+  d.totalUangSaku = parseNum(d.jmlOrgUangSaku) * parseNum(d.nomUangSaku);
+  d.totalGajiAsal = parseNum(d.jmlOrgGajiAsal) * parseNum(d.nomGajiAsal);
+  d.totalUangInap = parseNum(d.jmlOrgUangInap) * parseNum(d.nomUangInap);
+  d.nominalTitikan = parseNum(d.nomTitikan);
+  d.totalUJ = hitungTotalBaris(d);
+  kirimWAStruk(d, 'kantor');
+}
+
+function shareWhatsAppGB() {
+  let idx = getVal('selectNopolGB'); 
+  if (idx === "") return alert("Pilih no resi.");
+  let d = globalData[idx];
+  d.totalUangSaku = parseNum(d.jmlOrgUangSaku) * parseNum(d.nomUangSaku);
+  d.totalGajiAsal = parseNum(d.jmlOrgGajiAsal) * parseNum(d.nomGajiAsal);
+  d.totalUangInap = parseNum(d.jmlOrgUangInap) * parseNum(d.nomUangInap);
+  d.nominalTitikan = parseNum(d.nomTitikan);
+  d.totalUJ = hitungTotalBaris(d);
+  kirimWAStruk(d, 'gabungan');
+}
+
+function kirimWAStruk(d, tipeStruk) {
+    let pesan = `*BARAKA EXPRESS - PORT Madiun*\n`;
+    pesan += `*${tipeStruk === 'kantor' ? 'RINCIAN UJ ARMADA KANTOR' : 'RINCIAN UJ ARMADA GABUNGAN'}*\n\n`;
+    
+    pesan += `📄 No. Resi: ${d.noResi || '-'}\n`;
+    pesan += `📋 No. Surat Jalan: ${d.suratJalan || '-'}\n`;
+    pesan += `📅 Tanggal: ${d.tanggal || '-'}\n`;
+    pesan += `🛣️ Rute: ${d.rute || '-'}\n`;
+    pesan += `🚐 Type Kendaraan: ${d.tipeMobil || '-'}\n`;
+    pesan += `🚚 Nopol: ${d.nopol || '-'}\n`;
+    pesan += `👤 Sopir 1: ${d.sopir1 || '-'}\n`;
+    pesan += `👤 Sopir 2: ${d.sopir2 || '-'}\n\n`;
+
+    const komponen = [
+        { label: "Ganti Tol Asal", val: d.gantiTolAsal },
+        { label: "Pelunasan Marunda", val: d.pelunasanMarunda },
+        { label: `Uang Saku (${d.jmlOrgUangSaku} Orang x Rp ${formatRupiahTable(d.nomUangSaku)})`, val: d.totalUangSaku },
+        { label: `Gaji Asal (${d.jmlOrgGajiAsal} Orang x Rp ${formatRupiahTable(d.nomGajiAsal)})`, val: d.totalGajiAsal },
+        { label: "Uang Bongkar/Muat", val: d.uangBongkarMuat },
+        { label: "Uang Inap", val: d.totalUangInap },
+        { label: "Nominal Titikan", val: d.nominalTitikan },
+        { label: "Toll", val: d.toll },
+        { label: "KuranganTol", val: d.kuranganTol },
+        { label: "KelebihanTol", val: d.kelebihanTol, isMinus: true },
+        { label: "Operasional Sopir", val: d.operasionalSopir },
+        { label: "Uang Jalan", val: d.uangJalan },
+        { label: "Potongan", val: d.potongan, isMinus: true },
+        { label: "BBM Dan Bonus", val: d.bbmBonus },
+        { label: "Lain-Lain", val: d.lainLain }
+    ];
+
+    pesan += `*Rincian Biaya:*\n`;
+    komponen.forEach(item => {
+        if (item.val && item.val != 0) {
+            let formatVal = formatRupiah(Math.abs(item.val));
+            if (item.isMinus) formatVal = "-" + formatVal;
+            pesan += `• ${item.label}: ${formatVal}\n`;
+        }
+    });
+
+    pesan += `--------------------------\n`;
+    pesan += `*TOTAL UJ: ${formatRupiah(d.totalUJ)}*\n`;
+    pesan += `_Dicetak dari Sistem Port Madiun_`;
+
+    window.open(`https://wa.me/?text=${encodeURIComponent(pesan)}`, '_blank');
+}
+
+function downloadBackupJSON() {
+  if (globalData.length === 0) {
+    alert("Tidak ada data untuk dibackup!");
+    return;
+  }
+  let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalData, null, 2));
+  let downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  let dateObj = new Date();
+  let dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
+  downloadAnchor.setAttribute("download", `backup_uang_jalan_madiun_${dateStr}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+function restoreBackupJSON() {
+  let fileInput = document.getElementById('restoreFileJSON');
+  if (!fileInput.files || fileInput.files.length === 0) {
+    alert("Silakan pilih file backup (.json) terlebih dahulu!");
+    return;
+  }
+  let file = fileInput.files[0];
+  let reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      let parsedData = JSON.parse(e.target.result);
+      if (Array.isArray(parsedData)) {
+        if (confirm(`Berhasil memuat file backup berisi ${parsedData.length} data. Apakah Anda ingin mengganti seluruh data saat ini dengan data backup tersebut?`)) {
+          globalData = parsedData;
+          saveDataToLocalStorage();
+          renderTableAndDropdowns();
+          alert("Restore data berhasil dilakukan!");
+          switchTab('rekapTable');
+        }
+      } else {
+        alert("Format file JSON tidak valid.");
+      }
+    } catch (err) {
+      alert("Gagal membaca file JSON: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+document.getElementById('tambahBaris').addEventListener('click', function() {
+    let tbody = document.querySelector('#tabelPengeluaran tbody');
+    let barisBaru = document.createElement('tr');
+    
+    barisBaru.innerHTML = `
+        <td>
+            <select name="jenis_pengeluaran" class="form-control form-control-sm fw-bold">
+                <option value="">- Pilih -</option>
+                <option value="kategori1">Kategori 1</option>
+                <option value="kategori2">Kategori 2</option>
+                <option value="Truck Kantor">Jenis Dropdown Truck Kantor</option>
+                <option value="Rute Asal Kantor">Rute Asal Kantor</option>
+                <option value="Jumlah Saku Orang">Jumlah Saku Orang</option>
+                <option value="Jumlah Gaji Orang">Jumlah Gaji Orang</option>
+                <option value="Nominal Gaji Orang">Nominal Gaji Orang</option>
+                <option value="Jumlah Inap Orang">Jumlah Inap Orang</option>
+                <option value="Nominal Inap Orang">Nominal Inap Orang</option>
+                <option value="Ket Inap (waktu)">Ket Inap (waktu)</option>
+                <option value="Kekurangan Toll">Kekurangan Toll</option>
+                <option value="Kelebihan Toll">Kelebihan Toll</option>
+                <option value="Potongan">Potongan</option>
+                <option value="Truck Gabungan">Jenis Dropdown Truck Gabungan</option>
+                <option value="Ganti Toll Asal">Ganti Toll Asal</option>
+                <option value="Pelunasan Uang Jalan Marunda">Pelunasan Uang Jalan Marunda</option>
+                <option value="Uang Jalan Gabungan">Uang Jalan Gabungan</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" name="nominal[]" class="form-control form-control-sm fw-bold" placeholder="Nominal">
+        </td>
+        <td>
+            <button type="button" class="btn btn-warning btn-sm btn-edit">Edit</button>
+            <button type="button" class="btn btn-danger btn-sm btn-hapus">Hapus</button>
+        </td>
+    `;
+    tbody.appendChild(barisBaru);
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('btn-hapus')) {
+        let baris = e.target.closest('tr');
+        let tbody = baris.parentElement;
+        if (tbody.children.length > 1) {
+            baris.remove();
+        } else {
+            alert("Baris minimal harus ada satu!");
+        }
+    }
+    if (e.target && e.target.classList.contains('btn-edit')) {
+        alert("Fitur edit baris dinamis diaktifkan.");
+    }
+});
+</script>
+
+</body>
+</html>
